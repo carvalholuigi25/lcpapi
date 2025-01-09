@@ -1,0 +1,393 @@
+2025-01-09 09:18:12.668 +00:00  INF  Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+PRAGMA journal_mode = 'wal';
+2025-01-09 09:18:12.720 +00:00  INF  Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-01-09 09:18:12.734 +00:00  INF  Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsLock' AND "type" = 'table';
+2025-01-09 09:18:12.745 +00:00  INF  Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsLock" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK___EFMigrationsLock" PRIMARY KEY,
+    "Timestamp" TEXT NOT NULL
+);
+2025-01-09 09:18:12.751 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT OR IGNORE INTO "__EFMigrationsLock"("Id", "Timestamp") VALUES(1, '2025-01-09 09:18:12.7481172+00:00');
+SELECT changes();
+2025-01-09 09:18:12.823 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+    "ProductVersion" TEXT NOT NULL
+);
+2025-01-09 09:18:12.834 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-01-09 09:18:12.837 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-01-09 09:18:12.857 +00:00  INF  Applying migration '20250109091805_InitialCreateSQLite'.
+2025-01-09 09:18:12.879 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Posts" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_Posts" PRIMARY KEY AUTOINCREMENT,
+    "Title" TEXT NULL,
+    "Description" TEXT NULL,
+    "Image" TEXT NULL,
+    "DateCreation" TEXT NULL,
+    "Status" INTEGER NULL,
+    "UserId" INTEGER NULL
+);
+2025-01-09 09:18:12.880 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_Users" PRIMARY KEY AUTOINCREMENT,
+    "Username" TEXT NOT NULL,
+    "Password" TEXT NOT NULL,
+    "Email" TEXT NULL,
+    "DisplayName" TEXT NULL,
+    "Avatar" TEXT NULL,
+    "Cover" TEXT NULL,
+    "Role" INTEGER NULL,
+    "Privacy" INTEGER NULL,
+    "UsersInfoId" INTEGER NULL
+);
+2025-01-09 09:18:12.881 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RefreshToken" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_RefreshToken" PRIMARY KEY AUTOINCREMENT,
+    "Token" TEXT NOT NULL,
+    "Expires" TEXT NOT NULL,
+    "Created" TEXT NOT NULL,
+    "CreatedByIp" TEXT NOT NULL,
+    "Revoked" TEXT NULL,
+    "RevokedByIp" TEXT NOT NULL,
+    "ReplacedByToken" TEXT NOT NULL,
+    "ReasonRevoked" TEXT NOT NULL,
+    "UserId" INTEGER NOT NULL,
+    CONSTRAINT "FK_RefreshToken_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2025-01-09 09:18:12.883 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RefreshToken_UserId" ON "RefreshToken" ("UserId");
+2025-01-09 09:18:12.883 +00:00  INF  Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250109091805_InitialCreateSQLite', '9.0.0');
+2025-01-09 09:18:12.894 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "__EFMigrationsLock";
+2025-01-09 09:18:49.022 +00:00  INF  Executed DbCommand (553ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [lcpapidb];
+2025-01-09 09:18:49.135 +00:00  INF  Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [lcpapidb] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2025-01-09 09:18:49.152 +00:00  INF  Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-01-09 09:18:49.157 +00:00  INF  Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-01-09 09:18:49.184 +00:00  INF  Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-01-09 09:18:49.240 +00:00  INF  Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-01-09 09:18:49.251 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-01-09 09:18:49.252 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-01-09 09:18:49.257 +00:00  INF  Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-01-09 09:18:49.273 +00:00  INF  Applying migration '20250109091841_InitialCreateSQLServer'.
+2025-01-09 09:18:49.295 +00:00  INF  Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Posts] (
+    [Id] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NULL,
+    [Description] nvarchar(max) NULL,
+    [Image] nvarchar(max) NULL,
+    [DateCreation] datetime2 NULL,
+    [Status] int NULL,
+    [UserId] int NULL,
+    CONSTRAINT [PK_Posts] PRIMARY KEY ([Id])
+);
+2025-01-09 09:18:49.297 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [Id] int NOT NULL IDENTITY,
+    [Username] nvarchar(max) NOT NULL,
+    [Password] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NULL,
+    [DisplayName] nvarchar(max) NULL,
+    [Avatar] nvarchar(max) NULL,
+    [Cover] nvarchar(max) NULL,
+    [Role] int NULL,
+    [Privacy] int NULL,
+    [UsersInfoId] int NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([Id])
+);
+2025-01-09 09:18:49.301 +00:00  INF  Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshToken] (
+    [Id] int NOT NULL IDENTITY,
+    [Token] nvarchar(max) NOT NULL,
+    [Expires] datetime2 NOT NULL,
+    [Created] datetime2 NOT NULL,
+    [CreatedByIp] nvarchar(max) NOT NULL,
+    [Revoked] datetime2 NULL,
+    [RevokedByIp] nvarchar(max) NOT NULL,
+    [ReplacedByToken] nvarchar(max) NOT NULL,
+    [ReasonRevoked] nvarchar(max) NOT NULL,
+    [UserId] int NOT NULL,
+    CONSTRAINT [PK_RefreshToken] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_RefreshToken_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE
+);
+2025-01-09 09:18:49.305 +00:00  INF  Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RefreshToken_UserId] ON [RefreshToken] ([UserId]);
+2025-01-09 09:18:49.308 +00:00  INF  Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250109091841_InitialCreateSQLServer', N'9.0.0');
+2025-01-09 09:18:49.315 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2025-01-09 09:19:24.166 +00:00  ERR  An error occurred using the connection to database 'lcpapidb' on server 'tcp://localhost:5432'.
+2025-01-09 09:19:25.102 +00:00  INF  Executed DbCommand (528ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE lcpapidb;
+2025-01-09 09:19:25.389 +00:00  INF  Executed DbCommand (85ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2025-01-09 09:19:25.398 +00:00  INF  Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-01-09 09:19:25.415 +00:00  INF  Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2025-01-09 09:19:25.419 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-01-09 09:19:25.439 +00:00  INF  Applying migration '20250109091917_InitialCreatePostgresSQL'.
+2025-01-09 09:19:25.469 +00:00  INF  Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Posts" (
+    "Id" integer GENERATED BY DEFAULT AS IDENTITY,
+    "Title" text,
+    "Description" text,
+    "Image" text,
+    "DateCreation" timestamp with time zone,
+    "Status" integer,
+    "UserId" integer,
+    CONSTRAINT "PK_Posts" PRIMARY KEY ("Id")
+);
+2025-01-09 09:19:25.486 +00:00  INF  Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" integer GENERATED BY DEFAULT AS IDENTITY,
+    "Username" text NOT NULL,
+    "Password" text NOT NULL,
+    "Email" text,
+    "DisplayName" text,
+    "Avatar" text,
+    "Cover" text,
+    "Role" integer,
+    "Privacy" integer,
+    "UsersInfoId" integer,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+2025-01-09 09:19:25.508 +00:00  INF  Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RefreshToken" (
+    "Id" integer GENERATED BY DEFAULT AS IDENTITY,
+    "Token" text NOT NULL,
+    "Expires" timestamp with time zone NOT NULL,
+    "Created" timestamp with time zone NOT NULL,
+    "CreatedByIp" text NOT NULL,
+    "Revoked" timestamp with time zone,
+    "RevokedByIp" text NOT NULL,
+    "ReplacedByToken" text NOT NULL,
+    "ReasonRevoked" text NOT NULL,
+    "UserId" integer NOT NULL,
+    CONSTRAINT "PK_RefreshToken" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RefreshToken_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2025-01-09 09:19:25.513 +00:00  INF  Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RefreshToken_UserId" ON "RefreshToken" ("UserId");
+2025-01-09 09:19:25.515 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20250109091917_InitialCreatePostgresSQL', '9.0.0');
+2025-01-09 09:20:00.134 +00:00  INF  Executed DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE `lcpapidb`;
+2025-01-09 09:20:00.201 +00:00  INF  Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-01-09 09:20:00.225 +00:00  INF  Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT GET_LOCK('__lcpapidb_EFMigrationsLock', 259200)
+2025-01-09 09:20:00.376 +00:00  INF  Executed DbCommand (82ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (
+    `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
+    `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
+) CHARACTER SET=utf8mb4;
+2025-01-09 09:20:00.410 +00:00  INF  Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='lcpapidb' AND TABLE_NAME='__EFMigrationsHistory';
+2025-01-09 09:20:00.415 +00:00  INF  Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+2025-01-09 09:20:00.430 +00:00  INF  Applying migration '20250109091952_InitialCreateMySQL'.
+2025-01-09 09:20:00.460 +00:00  INF  Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+2025-01-09 09:20:00.500 +00:00  INF  Executed DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Posts` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `Title` longtext CHARACTER SET utf8mb4 NULL,
+    `Description` longtext CHARACTER SET utf8mb4 NULL,
+    `Image` longtext CHARACTER SET utf8mb4 NULL,
+    `DateCreation` datetime NULL,
+    `Status` int NULL,
+    `UserId` int NULL,
+    CONSTRAINT `PK_Posts` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+2025-01-09 09:20:00.543 +00:00  INF  Executed DbCommand (42ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Users` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `Username` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Password` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Email` longtext CHARACTER SET utf8mb4 NULL,
+    `DisplayName` longtext CHARACTER SET utf8mb4 NULL,
+    `Avatar` longtext CHARACTER SET utf8mb4 NULL,
+    `Cover` longtext CHARACTER SET utf8mb4 NULL,
+    `Role` int NULL,
+    `Privacy` int NULL,
+    `UsersInfoId` int NULL,
+    CONSTRAINT `PK_Users` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+2025-01-09 09:20:00.687 +00:00  INF  Executed DbCommand (143ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `RefreshToken` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `Token` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Expires` datetime NOT NULL,
+    `Created` datetime NOT NULL,
+    `CreatedByIp` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Revoked` datetime NULL,
+    `RevokedByIp` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `ReplacedByToken` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `ReasonRevoked` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `UserId` int NOT NULL,
+    CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_RefreshToken_Users_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+2025-01-09 09:20:00.763 +00:00  INF  Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_RefreshToken_UserId` ON `RefreshToken` (`UserId`);
+2025-01-09 09:20:00.771 +00:00  INF  Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20250109091952_InitialCreateMySQL', '9.0.0');
+2025-01-09 09:20:00.773 +00:00  INF  Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT RELEASE_LOCK('__lcpapidb_EFMigrationsLock')
+2025-01-09 09:20:32.125 +00:00  ERR  Hosting failed to startSystem.IO.FileNotFoundException: Could not find file 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\SSL\Certs\localhost.pfx'.
+File name: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\SSL\Certs\localhost.pfx'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Encoding encoding, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at System.Security.Cryptography.X509Certificates.X509Certificate2Collection.ImportFromPemFile(String certPemFilePath)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Certificates.CertificateConfigLoader.LoadCertificate(CertificateConfig certInfo, String endpointName)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.TlsConfigurationLoader.ApplyHttpsConfiguration(HttpsConnectionAdapterOptions httpsOptions, EndpointConfig endpoint, KestrelServerOptions serverOptions, CertificateConfig defaultCertificateConfig, ConfigurationReader configurationReader)
+   at Microsoft.AspNetCore.Server.Kestrel.KestrelConfigurationLoader.Reload()
+   at Microsoft.AspNetCore.Server.Kestrel.KestrelConfigurationLoader.LoadInternal()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__14_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+
+2025-01-09 09:22:48.850 +00:00  WRN  Overriding address(es) 'https://localhost:5000, http://localhost:5001'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+2025-01-09 09:22:48.920 +00:00  INF  Now listening on: http://localhost:5001
+2025-01-09 09:22:48.921 +00:00  INF  Now listening on: https://localhost:5000
+2025-01-09 09:22:48.922 +00:00  INF  Application started. Press Ctrl+C to shut down.
+2025-01-09 09:22:48.923 +00:00  INF  Hosting environment: Development
+2025-01-09 09:22:48.924 +00:00  INF  Content root path: C:\Users\luisc\Documents\projects\lcpapi\lcpapi
+2025-01-09 09:23:04.328 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/ - null null
+2025-01-09 09:23:04.406 +00:00  INF  Sending file. Request path: '/index.html'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\index.html'
+2025-01-09 09:23:04.416 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/index.html - 200 1534 text/html 88.6305ms
+2025-01-09 09:23:04.567 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js - null null
+2025-01-09 09:23:04.567 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/css/main.083db3041cad5808522f.css - null null
+2025-01-09 09:23:04.603 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/images/logo.709ad086a73df4458104.svg - null null
+2025-01-09 09:23:04.607 +00:00  INF  Sending file. Request path: '/assets/css/main.083db3041cad5808522f.css'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\css\main.083db3041cad5808522f.css'
+2025-01-09 09:23:04.613 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/css/main.083db3041cad5808522f.css - 200 233379 text/css 45.6422ms
+2025-01-09 09:23:04.656 +00:00  INF  Sending file. Request path: '/assets/images/logo.709ad086a73df4458104.svg'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\images\logo.709ad086a73df4458104.svg'
+2025-01-09 09:23:04.658 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/images/logo.709ad086a73df4458104.svg - 200 5668 image/svg+xml 54.6632ms
+2025-01-09 09:23:04.682 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/images/bkg.dfaeb8848648e908a371.jpg - null null
+2025-01-09 09:23:04.682 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/fonts/ethnocentricrg.be90612cdf104f2057e4.otf - null null
+2025-01-09 09:23:04.683 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/fonts/Roboto-Regular.27f62b53b93858475a7f.ttf - null null
+2025-01-09 09:23:04.710 +00:00  INF  Sending file. Request path: '/assets/fonts/ethnocentricrg.be90612cdf104f2057e4.otf'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\fonts\ethnocentricrg.be90612cdf104f2057e4.otf'
+2025-01-09 09:23:04.712 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/fonts/ethnocentricrg.be90612cdf104f2057e4.otf - 200 26792 font/otf 29.2666ms
+2025-01-09 09:23:04.721 +00:00  INF  Sending file. Request path: '/assets/fonts/Roboto-Regular.27f62b53b93858475a7f.ttf'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\fonts\Roboto-Regular.27f62b53b93858475a7f.ttf'
+2025-01-09 09:23:04.725 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/fonts/Roboto-Regular.27f62b53b93858475a7f.ttf - 200 168260 application/x-font-ttf 42.0444ms
+2025-01-09 09:23:04.743 +00:00  INF  Sending file. Request path: '/assets/images/bkg.dfaeb8848648e908a371.jpg'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\images\bkg.dfaeb8848648e908a371.jpg'
+2025-01-09 09:23:04.744 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/images/bkg.dfaeb8848648e908a371.jpg - 200 219309 image/jpeg 62.1699ms
+2025-01-09 09:23:05.045 +00:00  INF  Sending file. Request path: '/assets/js/main.f845564968e04d43424c.js'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\js\main.f845564968e04d43424c.js'
+2025-01-09 09:23:05.046 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js - 200 556146 text/javascript 478.6172ms
+2025-01-09 09:23:05.125 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/favicon/apple-touch-icon.png - null null
+2025-01-09 09:23:05.125 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/favicon/favicon.svg - null null
+2025-01-09 09:23:05.134 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/json/particles.7085986127b8d6160105.json - null null
+2025-01-09 09:23:05.144 +00:00  INF  Sending file. Request path: '/favicon/apple-touch-icon.png'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\favicon\apple-touch-icon.png'
+2025-01-09 09:23:05.145 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/favicon/apple-touch-icon.png - 200 5861 image/png 20.3878ms
+2025-01-09 09:23:05.147 +00:00  INF  Sending file. Request path: '/favicon/favicon.svg'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\favicon\favicon.svg'
+2025-01-09 09:23:05.148 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/favicon/favicon.svg - 200 5932 image/svg+xml 22.6785ms
+2025-01-09 09:23:05.161 +00:00  INF  Sending file. Request path: '/assets/json/particles.7085986127b8d6160105.json'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\json\particles.7085986127b8d6160105.json'
+2025-01-09 09:23:05.162 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/json/particles.7085986127b8d6160105.json - 200 9498 application/json 27.9521ms
+2025-01-09 09:23:24.995 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/ - null null
+2025-01-09 09:23:25.000 +00:00  INF  Sending file. Request path: '/index.html'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\index.html'
+2025-01-09 09:23:25.001 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/index.html - 200 1529 text/html 5.533ms
+2025-01-09 09:23:29.318 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger - null null
+2025-01-09 09:23:29.426 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger - 302 0 null 107.7217ms
+2025-01-09 09:23:29.443 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/index.html - null null
+2025-01-09 09:23:29.555 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/index.html - 200 null text/html; charset=utf-8 111.3515ms
+2025-01-09 09:23:29.638 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/swagger-ui.css - null null
+2025-01-09 09:23:29.639 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/index.css - null null
+2025-01-09 09:23:29.644 +00:00  INF  Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2025-01-09 09:23:29.644 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/index.css - 200 218 text/css 5.4834ms
+2025-01-09 09:23:29.660 +00:00  INF  Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-01-09 09:23:29.660 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/swagger-ui.css - 499 152073 text/css 21.844ms
+2025-01-09 09:23:29.870 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/favicon-16x16.png - null null
+2025-01-09 09:23:29.873 +00:00  INF  Sending file. Request path: '/favicon-16x16.png'. Physical path: 'N/A'
+2025-01-09 09:23:29.873 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/favicon-16x16.png - 200 665 image/png 2.9894ms
+2025-01-09 09:23:29.939 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - null null
+2025-01-09 09:23:30.782 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - 200 null application/json; charset=utf-8 843.0836ms
+2025-01-09 09:23:38.704 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/docs - null null
+2025-01-09 09:23:38.708 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/docs - 302 0 null 3.3043ms
+2025-01-09 09:23:38.732 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/docs/index.html?url=/swagger/v1/swagger.json - null null
+2025-01-09 09:23:38.753 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/docs/index.html?url=/swagger/v1/swagger.json - 200 null text/html; charset=utf-8 20.6706ms
+2025-01-09 09:23:39.465 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - null null
+2025-01-09 09:23:39.467 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - 200 null application/json; charset=utf-8 2.0072ms
+2025-01-09 09:24:19.221 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js.map - null null
+2025-01-09 09:24:19.306 +00:00  INF  Sending file. Request path: '/assets/js/main.f845564968e04d43424c.js.map'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\js\main.f845564968e04d43424c.js.map'
+2025-01-09 09:24:19.307 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js.map - 200 1329858 text/plain 86.5106ms
+2025-01-09 09:24:23.443 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js.map - null null
+2025-01-09 09:24:23.445 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/installHook.js.map - null null
+2025-01-09 09:24:23.447 +00:00  INF  The file /assets/js/main.f845564968e04d43424c.js.map was not modified
+2025-01-09 09:24:23.447 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/js/main.f845564968e04d43424c.js.map - 304 null text/plain 4.2268ms
+2025-01-09 09:24:23.654 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/installHook.js.map - 404 0 null 208.8338ms
+2025-01-09 09:24:23.656 +00:00  INF  Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:5000/installHook.js.map, Response status code: 404
+2025-01-09 09:24:34.770 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/assets/css/main.083db3041cad5808522f.css.map - null null
+2025-01-09 09:24:34.791 +00:00  INF  Sending file. Request path: '/assets/css/main.083db3041cad5808522f.css.map'. Physical path: 'C:\Users\luisc\Documents\projects\lcpapi\lcpapi\wwwroot\assets\css\main.083db3041cad5808522f.css.map'
+2025-01-09 09:24:34.791 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/assets/css/main.083db3041cad5808522f.css.map - 200 959 text/plain 20.7049ms
+2025-01-09 09:24:36.924 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/docs - null null
+2025-01-09 09:24:36.927 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/docs - 302 0 null 2.7022ms
+2025-01-09 09:24:36.994 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/docs/index.html?url=/swagger/v1/swagger.json - null null
+2025-01-09 09:24:36.996 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/docs/index.html?url=/swagger/v1/swagger.json - 200 null text/html; charset=utf-8 2.646ms
+2025-01-09 09:24:37.303 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - null null
+2025-01-09 09:24:37.305 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - 200 null application/json; charset=utf-8 1.6713ms
+2025-01-09 09:24:44.142 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger - null null
+2025-01-09 09:24:44.144 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger - 302 0 null 2.5692ms
+2025-01-09 09:24:44.178 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/index.html - null null
+2025-01-09 09:24:44.180 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/index.html - 200 null text/html; charset=utf-8 2.5517ms
+2025-01-09 09:24:44.497 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - null null
+2025-01-09 09:24:44.498 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/swagger/v1/swagger.json - 200 null application/json; charset=utf-8 1.0334ms
+2025-01-09 09:24:49.509 +00:00  INF  Request starting HTTP/2 GET https://localhost:5000/api/posts - null null
+2025-01-09 09:24:49.539 +00:00  INF  Executing endpoint 'lcpapi.Controllers.PostsController.GetPosts (lcpapi)'
+2025-01-09 09:24:49.568 +00:00  INF  Route matched with {action = "GetPosts", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[lcpapi.Models.Post]]] GetPosts() on controller lcpapi.Controllers.PostsController (lcpapi).
+2025-01-09 09:24:50.747 +00:00  INF  Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."DateCreation", "p"."Description", "p"."Image", "p"."Status", "p"."Title", "p"."UserId"
+FROM "Posts" AS "p"
+2025-01-09 09:24:50.763 +00:00  INF  Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[lcpapi.Models.Post, lcpapi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-01-09 09:24:50.786 +00:00  INF  Executed action lcpapi.Controllers.PostsController.GetPosts (lcpapi) in 1210.6784ms
+2025-01-09 09:24:50.786 +00:00  INF  Executed endpoint 'lcpapi.Controllers.PostsController.GetPosts (lcpapi)'
+2025-01-09 09:24:50.791 +00:00  INF  Request finished HTTP/2 GET https://localhost:5000/api/posts - 200 null application/json; charset=utf-8 1282.6709ms
+2025-01-09 09:25:02.039 +00:00  INF  Application is shutting down...
