@@ -1,0 +1,24 @@
+[ req ]
+default_bits = 4096
+distinguished_name = req
+x509_extension = v3_ca
+req_extensions = v3_req
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[ alt_names ]
+IP.1 = 10.0.2.2
+IP.2 = 192.168.1.72
+IP.3 = 0.0.0.0
+IP.4 = 127.0.0.1
+DNS.1 = localhost
+
+[ v3_ca ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:TRUE, pathlen:0
+keyUsage = critical, cRLSign, keyCertSign
+extendedKeyUsage = serverAuth, clientAuth
