@@ -30,6 +30,7 @@ public class User
     public string? DisplayName { get; set; }
     public string? Avatar { get; set; } = "images/avatars/u1.png";
     public string? Cover { get; set; } = "images/covers/u1.png";
+    public string? DateBirthday { get; set; } = DateTime.Now.ToString();
     public EUsersRoles? Role { get; set; } = EUsersRoles.user;
     public EUserPrivacy? Privacy { get; set; } = EUserPrivacy.locked;
     public int? UsersInfoId { get; set; } = 1;

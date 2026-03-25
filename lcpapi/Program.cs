@@ -171,6 +171,7 @@ app.UseCors(x => x
 app.UseRequestLocalization(options);
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRouting();
 // app.UseHttpsRedirection();
 app.UseIpRateLimiting();
 app.UseAuthorization();

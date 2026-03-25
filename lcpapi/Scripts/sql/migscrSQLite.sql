@@ -154,30 +154,6 @@ CREATE TABLE "Tvseries" (
     "Format" TEXT NULL
 );
 
-CREATE TABLE "TvseriesCommentsInfo" (
-    "CommentsId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesCommentsInfo" PRIMARY KEY AUTOINCREMENT,
-    "CommentsTitle" TEXT NOT NULL,
-    "CommentsDescription" TEXT NOT NULL,
-    "CommentsIsFeatured" INTEGER NULL,
-    "CommentsDateTime" TEXT NULL,
-    "CommentsStatus" INTEGER NULL,
-    "ReviewsId" INTEGER NULL,
-    "EpisodesId" INTEGER NULL,
-    "SeasonsId" INTEGER NULL,
-    "TvserieId" INTEGER NULL,
-    "UserId" INTEGER NULL
-);
-
-CREATE TABLE "TvseriesReactions" (
-    "TvseriesReactionsId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesReactions" PRIMARY KEY AUTOINCREMENT,
-    "ReactionsType" INTEGER NULL,
-    "ReviewId" INTEGER NOT NULL,
-    "EpisodeId" INTEGER NOT NULL,
-    "SeasonId" INTEGER NOT NULL,
-    "TvserieId" INTEGER NOT NULL,
-    "UserId" INTEGER NOT NULL
-);
-
 CREATE TABLE "Users" (
     "Id" INTEGER NOT NULL CONSTRAINT "PK_Users" PRIMARY KEY AUTOINCREMENT,
     "Username" TEXT NOT NULL,
@@ -186,6 +162,7 @@ CREATE TABLE "Users" (
     "DisplayName" TEXT NULL,
     "Avatar" TEXT NULL,
     "Cover" TEXT NULL,
+    "DateBirthday" TEXT NULL,
     "Role" INTEGER NULL,
     "Privacy" INTEGER NULL,
     "UsersInfoId" INTEGER NULL,
@@ -264,6 +241,22 @@ CREATE TABLE "SoftwaresMediaInfo" (
     CONSTRAINT "FK_SoftwaresMediaInfo_Softwares_SoftwareId" FOREIGN KEY ("SoftwareId") REFERENCES "Softwares" ("SoftwareId") ON DELETE CASCADE
 );
 
+CREATE TABLE "TvseriesEpisodesInfos" (
+    "EpisodesId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesEpisodesInfos" PRIMARY KEY AUTOINCREMENT,
+    "EpisodesTitle" TEXT NOT NULL,
+    "EpisodesDescription" TEXT NULL,
+    "EpisodesImage" TEXT NULL,
+    "EpisodesStudio" TEXT NULL,
+    "EpisodesIsFeatured" INTEGER NULL,
+    "EpisodesIsWatched" INTEGER NULL,
+    "EpisodesScoreRating" decimal(18,2) NULL,
+    "EpisodesReleaseDate" TEXT NULL,
+    "SeasonsId" INTEGER NULL,
+    "TvserieId" INTEGER NULL,
+    "TvseriesTvserieId" INTEGER NULL,
+    CONSTRAINT "FK_TvseriesEpisodesInfos_Tvseries_TvseriesTvserieId" FOREIGN KEY ("TvseriesTvserieId") REFERENCES "Tvseries" ("TvserieId")
+);
+
 CREATE TABLE "TvseriesMediaInfo" (
     "MediaId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesMediaInfo" PRIMARY KEY AUTOINCREMENT,
     "EpisodesId" INTEGER NOT NULL,
@@ -310,26 +303,6 @@ CREATE TABLE "TvseriesSeasonsInfo" (
     CONSTRAINT "FK_TvseriesSeasonsInfo_Tvseries_TvseriesTvserieId" FOREIGN KEY ("TvseriesTvserieId") REFERENCES "Tvseries" ("TvserieId")
 );
 
-CREATE TABLE "TvseriesEpisodesInfos" (
-    "EpisodesId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesEpisodesInfos" PRIMARY KEY AUTOINCREMENT,
-    "EpisodesTitle" TEXT NOT NULL,
-    "EpisodesDescription" TEXT NULL,
-    "EpisodesImage" TEXT NULL,
-    "EpisodesStudio" TEXT NULL,
-    "EpisodesIsFeatured" INTEGER NULL,
-    "EpisodesIsWatched" INTEGER NULL,
-    "EpisodesScoreRating" decimal(18,2) NULL,
-    "EpisodesReleaseDate" TEXT NULL,
-    "SeasonsId" INTEGER NULL,
-    "TvserieId" INTEGER NULL,
-    "ReactionsInfoTvseriesReactionsId" INTEGER NULL,
-    "CommentsInfoCommentsId" INTEGER NULL,
-    "TvseriesTvserieId" INTEGER NULL,
-    CONSTRAINT "FK_TvseriesEpisodesInfos_TvseriesCommentsInfo_CommentsInfoCommentsId" FOREIGN KEY ("CommentsInfoCommentsId") REFERENCES "TvseriesCommentsInfo" ("CommentsId"),
-    CONSTRAINT "FK_TvseriesEpisodesInfos_TvseriesReactions_ReactionsInfoTvseriesReactionsId" FOREIGN KEY ("ReactionsInfoTvseriesReactionsId") REFERENCES "TvseriesReactions" ("TvseriesReactionsId"),
-    CONSTRAINT "FK_TvseriesEpisodesInfos_Tvseries_TvseriesTvserieId" FOREIGN KEY ("TvseriesTvserieId") REFERENCES "Tvseries" ("TvserieId")
-);
-
 CREATE TABLE "RefreshToken" (
     "Id" INTEGER NOT NULL CONSTRAINT "PK_RefreshToken" PRIMARY KEY AUTOINCREMENT,
     "Token" TEXT NOT NULL,
@@ -366,6 +339,34 @@ CREATE TABLE "UserPermissionsSettings" (
     CONSTRAINT "FK_UserPermissionsSettings_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
 );
 
+CREATE TABLE "TvseriesCommentsInfo" (
+    "CommentsId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesCommentsInfo" PRIMARY KEY AUTOINCREMENT,
+    "CommentsTitle" TEXT NOT NULL,
+    "CommentsDescription" TEXT NOT NULL,
+    "CommentsIsFeatured" INTEGER NULL,
+    "CommentsDateTime" TEXT NULL,
+    "CommentsStatus" INTEGER NULL,
+    "ReviewsId" INTEGER NULL,
+    "EpisodesId" INTEGER NULL,
+    "SeasonsId" INTEGER NULL,
+    "TvserieId" INTEGER NULL,
+    "UserId" INTEGER NULL,
+    "TvseriesEpisodesInfoEpisodesId" INTEGER NULL,
+    CONSTRAINT "FK_TvseriesCommentsInfo_TvseriesEpisodesInfos_TvseriesEpisodesInfoEpisodesId" FOREIGN KEY ("TvseriesEpisodesInfoEpisodesId") REFERENCES "TvseriesEpisodesInfos" ("EpisodesId")
+);
+
+CREATE TABLE "TvseriesReactions" (
+    "TvseriesReactionsId" INTEGER NOT NULL CONSTRAINT "PK_TvseriesReactions" PRIMARY KEY AUTOINCREMENT,
+    "ReactionsType" INTEGER NULL,
+    "ReviewId" INTEGER NOT NULL,
+    "EpisodeId" INTEGER NOT NULL,
+    "SeasonId" INTEGER NOT NULL,
+    "TvserieId" INTEGER NOT NULL,
+    "UserId" INTEGER NOT NULL,
+    "TvseriesEpisodesInfoEpisodesId" INTEGER NULL,
+    CONSTRAINT "FK_TvseriesReactions_TvseriesEpisodesInfos_TvseriesEpisodesInfoEpisodesId" FOREIGN KEY ("TvseriesEpisodesInfoEpisodesId") REFERENCES "TvseriesEpisodesInfos" ("EpisodesId")
+);
+
 CREATE INDEX "IX_ActionFiguresMediaInfo_ActionFigureId" ON "ActionFiguresMediaInfo" ("ActionFigureId");
 
 CREATE INDEX "IX_AnimesMediaInfo_AnimeId" ON "AnimesMediaInfo" ("AnimeId");
@@ -384,13 +385,13 @@ CREATE INDEX "IX_RefreshToken_UserId" ON "RefreshToken" ("UserId");
 
 CREATE INDEX "IX_SoftwaresMediaInfo_SoftwareId" ON "SoftwaresMediaInfo" ("SoftwareId");
 
-CREATE INDEX "IX_TvseriesEpisodesInfos_CommentsInfoCommentsId" ON "TvseriesEpisodesInfos" ("CommentsInfoCommentsId");
-
-CREATE INDEX "IX_TvseriesEpisodesInfos_ReactionsInfoTvseriesReactionsId" ON "TvseriesEpisodesInfos" ("ReactionsInfoTvseriesReactionsId");
+CREATE INDEX "IX_TvseriesCommentsInfo_TvseriesEpisodesInfoEpisodesId" ON "TvseriesCommentsInfo" ("TvseriesEpisodesInfoEpisodesId");
 
 CREATE INDEX "IX_TvseriesEpisodesInfos_TvseriesTvserieId" ON "TvseriesEpisodesInfos" ("TvseriesTvserieId");
 
 CREATE INDEX "IX_TvseriesMediaInfo_TvseriesTvserieId" ON "TvseriesMediaInfo" ("TvseriesTvserieId");
+
+CREATE INDEX "IX_TvseriesReactions_TvseriesEpisodesInfoEpisodesId" ON "TvseriesReactions" ("TvseriesEpisodesInfoEpisodesId");
 
 CREATE INDEX "IX_TvseriesReviewsInfos_TvseriesTvserieId" ON "TvseriesReviewsInfos" ("TvseriesTvserieId");
 
@@ -401,7 +402,7 @@ CREATE UNIQUE INDEX "IX_UserModerationSettings_UserId" ON "UserModerationSetting
 CREATE UNIQUE INDEX "IX_UserPermissionsSettings_UserId" ON "UserPermissionsSettings" ("UserId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20260214135031_InitialCreateSQLite', '10.0.2');
+VALUES ('20260325160221_InitialCreateSQLite', '10.0.2');
 
 COMMIT;
 
