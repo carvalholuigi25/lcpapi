@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,22 +17,22 @@ public class Settings
     public string ThemeSettingName { get; set; } = null!;
 
     [Display(Name = "Real Data Time Enabled", Description = "Indicates whether real data time is enabled.")]
-    public bool? RealDataTimeEnabled { get; set; } = false;
+    public string? RealDataTimeEnabled { get; set; } = "false";
 
     [Display(Name = "Dark Mode", Description = "Indicates whether dark mode is enabled.")]
-    [Required(ErrorMessage = "Dark mode setting is required.")]
-    public bool IsDarkMode { get; set; } = false;
+    public string? IsDarkMode { get; set; } = "false";
 
     [Display(Name = "Auto Refresh Interval", Description = "The interval at which the data should be refreshed automatically.")]
     [Required(ErrorMessage = "Auto refresh interval setting is required.")]
     [MaxLength(10000, ErrorMessage = "Auto refresh interval cannot exceed 10000.")]
+    [DefaultValue(0)]
     public int? AutoRefreshInterval { get; set; } = 0;
 
     [Display(Name = "Notifications Enabled", Description = "Indicates whether notifications are enabled.")]
-    public bool NotificationsEnabled { get; set; } = false;
+    public string? NotificationsEnabled { get; set; } = "false";
 
     [Display(Name = "Logging Enabled", Description = "Indicates whether logging is enabled.")]
-    public bool EnableLogging { get; set; } = false;
+    public string? EnableLogging { get; set; } = "false";
 
     [Display(Name = "User ID", Description = "The ID of the user associated with these settings.")]
     public int? UserId { get; set; } = 1;

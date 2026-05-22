@@ -84,7 +84,7 @@ namespace lcpapi.Controllers
         /// <response code="201">Returns the info about setting</response>
         /// <response code="400">If the setting info is empty</response>
         [HttpGet("{id}")]
-        [Authorize(Policy = "StaffOnly")]
+        [Authorize(Policy = "AllUsers")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Settings>> GetSetting(int? id)
@@ -149,7 +149,8 @@ namespace lcpapi.Controllers
         /// <response code="400">If the settings infos updated are empty by id and its body</response>
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Policy = "StaffOnly")]
+        [AllowAnonymous]
+        // [Authorize(Policy = "AllUsers")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PutSetting(int? id, Settings setting)
@@ -171,7 +172,7 @@ namespace lcpapi.Controllers
         /// <response code="201">Returns the all settings infos are deleted by id</response>
         /// <response code="400">If the settings infos are deleted by id</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "StaffOnly")]
+        [Authorize(Policy = "AllUsers")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSetting(int? id)

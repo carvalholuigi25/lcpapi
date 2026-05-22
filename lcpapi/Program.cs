@@ -31,6 +31,8 @@ var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>();
 
+var  corstitle = "defaultCors";
+
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
@@ -55,10 +57,10 @@ switch (config.GetSection("DefDBMode").Value)
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DefaultCors", policy =>
+    options.AddPolicy(corstitle, policy =>
     {
         policy.WithOrigins(allowedOrigins!)
-              .AllowAnyMethod()
+              .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
               .AllowAnyHeader()
               .AllowCredentials();
     });
@@ -179,7 +181,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseCors("DefaultCors");
+app.UseCors(corstitle);
 
 // app.UseCors(x => x
 //     .SetIsOriginAllowed(origin => true)
