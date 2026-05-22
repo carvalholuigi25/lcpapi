@@ -30,6 +30,7 @@ public class MyDBContext : DbContext
     public DbSet<RecipesFoods> RecipesFoods { get; set; } = null!;
     public DbSet<GamesMediaInfo> GamesMedias { get; set; } = null!;
     public DbSet<FileUploadInfo> FileUploadInfos { get; set; } = null!;
+    public DbSet<Settings> Settings { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

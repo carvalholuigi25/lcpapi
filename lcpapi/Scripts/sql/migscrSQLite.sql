@@ -125,6 +125,17 @@ CREATE TABLE "RecipesFoods" (
     "IsFeatured" INTEGER NULL
 );
 
+CREATE TABLE "Settings" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_Settings" PRIMARY KEY AUTOINCREMENT,
+    "ThemeSettingName" TEXT NOT NULL,
+    "RealDataTimeEnabled" INTEGER NULL,
+    "IsDarkMode" INTEGER NOT NULL,
+    "AutoRefreshInterval" INTEGER NOT NULL,
+    "NotificationsEnabled" INTEGER NOT NULL,
+    "EnableLogging" INTEGER NOT NULL,
+    "UserId" INTEGER NULL
+);
+
 CREATE TABLE "Softwares" (
     "SoftwareId" INTEGER NOT NULL CONSTRAINT "PK_Softwares" PRIMARY KEY AUTOINCREMENT,
     "Name" TEXT NOT NULL,
@@ -402,7 +413,7 @@ CREATE UNIQUE INDEX "IX_UserModerationSettings_UserId" ON "UserModerationSetting
 CREATE UNIQUE INDEX "IX_UserPermissionsSettings_UserId" ON "UserPermissionsSettings" ("UserId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20260325160221_InitialCreateSQLite', '10.0.2');
+VALUES ('20260522152620_InitialCreateSQLite', '10.0.8');
 
 COMMIT;
 
