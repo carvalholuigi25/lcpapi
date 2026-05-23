@@ -29,7 +29,7 @@ namespace lcpapi.Controllers
         ///     {
         ///         [
         ///             {
-        ///                 "id": 0,
+        ///                 "settingsId": 0,
         ///                 "themeSettingName": "string",
         ///                 "realDataTimeEnabled": false,
         ///                 "isDarkMode": false,
@@ -44,7 +44,7 @@ namespace lcpapi.Controllers
         /// <response code="201">Returns the all infos about settings</response>
         /// <response code="400">If the settings infos are empty</response>
         [HttpGet]
-        [Authorize(Policy = "AllUsers")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Settings>>> GetSettings([FromQuery] QueryParams queryParams)
@@ -71,7 +71,7 @@ namespace lcpapi.Controllers
         ///
         ///     GET /api/settings
         ///     {
-        ///          "id": 0,
+        ///          "settingsId": 0,
         ///          "themeSettingName": "string",
         ///          "realDataTimeEnabled": false,
         ///          "isDarkMode": false,
@@ -84,7 +84,7 @@ namespace lcpapi.Controllers
         /// <response code="201">Returns the info about setting</response>
         /// <response code="400">If the setting info is empty</response>
         [HttpGet("{id}")]
-        [Authorize(Policy = "AllUsers")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Settings>> GetSetting(int? id)
@@ -102,7 +102,7 @@ namespace lcpapi.Controllers
         ///
         ///     POST /api/settings
         ///     {
-        ///         "id": 0,
+        ///         "settingsId": 0,
         ///         "themeSettingName": "string",
         ///         "realDataTimeEnabled": false,
         ///         "isDarkMode": false,
@@ -135,7 +135,7 @@ namespace lcpapi.Controllers
         ///
         ///     PUT /api/settings
         ///     {
-        ///         "id": 0,
+        ///         "settingsId": 0,
         ///         "themeSettingName": "string",
         ///         "realDataTimeEnabled": false,
         ///         "isDarkMode": false,
@@ -172,7 +172,8 @@ namespace lcpapi.Controllers
         /// <response code="201">Returns the all settings infos are deleted by id</response>
         /// <response code="400">If the settings infos are deleted by id</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AllUsers")]
+        [AllowAnonymous]
+        // [Authorize(Policy = "AllUsers")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSetting(int? id)

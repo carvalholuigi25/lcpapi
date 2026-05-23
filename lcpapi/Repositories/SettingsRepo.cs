@@ -60,12 +60,12 @@ public class SettingsRepo : ControllerBase, ISettingsRepo
         await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", setting);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetSetting), new { id = setting.Id }, setting);
+        return CreatedAtAction(nameof(GetSetting), new { id = setting.SettingsId }, setting);
     }
 
     public async Task<IActionResult> PutSetting(int? id, Settings setting)
     {
-        if (id != setting.Id)
+        if (id != setting.SettingsId)
         {
             return BadRequest();
         }
@@ -123,7 +123,7 @@ public class SettingsRepo : ControllerBase, ISettingsRepo
 
     private bool SettingExists(int? id)
     {
-        return _context.Settings.Any(e => e.Id == id);
+        return _context.Settings.Any(e => e.SettingsId == id);
     }
 
     private static IQueryable<Settings> GetFilterData(IQueryable<Settings> query, QueryParams queryParams) {
@@ -136,7 +136,7 @@ public class SettingsRepo : ControllerBase, ISettingsRepo
                 query = queryParams.SortBy.ToLower() switch
                 {
                     "ThemeSettingName" => sortorderval.Contains("desc", strcom) ? query.OrderByDescending(i => i.ThemeSettingName) : query.OrderBy(i => i.ThemeSettingName),
-                    _ => query.Where(i => i.Id == int.Parse(queryParams.Search)),
+                    _ => query.Where(i => i.SettingsId == int.Parse(queryParams.Search)),
                 };
             }
         }
@@ -152,7 +152,7 @@ public class SettingsRepo : ControllerBase, ISettingsRepo
             query = queryParams.SortBy.ToLower() switch
             {
                 "ThemeSettingName" => sortorderval.Contains("desc", strcom) ? query.OrderByDescending(i => i.ThemeSettingName) : query.OrderBy(i => i.ThemeSettingName),
-                _ => sortorderval.Contains("desc", strcom) ? query.OrderByDescending(i => i.Id) : query.OrderBy(i => i.Id),
+                _ => sortorderval.Contains("desc", strcom) ? query.OrderByDescending(i => i.SettingsId) : query.OrderBy(i => i.SettingsId),
             };
         }
 

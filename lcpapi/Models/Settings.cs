@@ -8,7 +8,7 @@ public class Settings
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int Id { get; set; }
+    public int SettingsId { get; set; }
 
     [Required(ErrorMessage = "Theme setting name is required.")]
     [MinLength(1, ErrorMessage = "Theme setting name must be at least 1 character long.")]
@@ -17,23 +17,27 @@ public class Settings
     public string ThemeSettingName { get; set; } = null!;
 
     [Display(Name = "Real Data Time Enabled", Description = "Indicates whether real data time is enabled.")]
-    public string? RealDataTimeEnabled { get; set; } = "false";
+    [DefaultValue(false)]
+    public bool? RealDataTimeEnabled { get; set; }
 
     [Display(Name = "Dark Mode", Description = "Indicates whether dark mode is enabled.")]
-    public string? IsDarkMode { get; set; } = "false";
+    [DefaultValue(false)]
+    public bool? IsDarkMode { get; set; }
 
     [Display(Name = "Auto Refresh Interval", Description = "The interval at which the data should be refreshed automatically.")]
     [Required(ErrorMessage = "Auto refresh interval setting is required.")]
-    [MaxLength(10000, ErrorMessage = "Auto refresh interval cannot exceed 10000.")]
     [DefaultValue(0)]
     public int? AutoRefreshInterval { get; set; } = 0;
 
     [Display(Name = "Notifications Enabled", Description = "Indicates whether notifications are enabled.")]
-    public string? NotificationsEnabled { get; set; } = "false";
+    [DefaultValue(false)]
+    public bool? NotificationsEnabled { get; set; }
 
     [Display(Name = "Logging Enabled", Description = "Indicates whether logging is enabled.")]
-    public string? EnableLogging { get; set; } = "false";
+    [DefaultValue(false)]
+    public bool? EnableLogging { get; set; }
 
     [Display(Name = "User ID", Description = "The ID of the user associated with these settings.")]
-    public int? UserId { get; set; } = 1;
+    [DefaultValue(1)]
+    public int? UserId { get; set; }
 }
