@@ -19,3 +19,7 @@ lcpapi.library/wwwroot/assets/images/books
 lcpapi.library/wwwroot/assets/files
 lcpapi/SSL/Certs
 lcpapi/SSL/Keys
+.vs/
+lcpapi/.vs/
+lcpapi.library/.vs/
+lcpapi.unittests/.vs/
