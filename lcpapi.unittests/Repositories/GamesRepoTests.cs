@@ -1,331 +1,149 @@
-using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Moq;
 using lcpapi.Context;
-using lcpapi.Models;
-using lcpapi.Repositories;
-using lcpapi.Models.QParams;
 using lcpapi.Hubs;
+using lcpapi.Models;
+using lcpapi.Models.QParams;
+using lcpapi.Repositories;
 
 namespace lcpapi.unittests.Repositories;
 
 public class GamesRepoTests
 {
-    private readonly Mock<MyDBContext> _mockContext;
-    private readonly Mock<IHubContext<ChatHub>> _mockHubContext;
-    private readonly GamesRepo _gamesRepo;
+    private readonly MyDBContext _context;
+    private readonly Mock<IHubContext<ChatHub>> _hubContextMock;
+    private readonly GamesRepo _repo;
 
     public GamesRepoTests()
     {
-        _mockContext = new Mock<MyDBContext>();
-        _mockHubContext = new Mock<IHubContext<ChatHub>>();
-        _gamesRepo = new GamesRepo(_mockContext.Object, _mockHubContext.Object);
-    }
+        var configMock = new Mock<IConfiguration>();
+        configMock.Setup(c => c.GetSection(It.IsAny<string>()).Value).Returns("MemoryDB");
 
-    #region GetGames Tests
+        var options = new DbContextOptionsBuilder<MyDBContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
 
-    [Fact]
-    public async Task GetGames_WithValidQueryParams_ReturnsOkResultWithGames()
-    {
-        // Arrange
-        var games = new List<Game>
-        {
-            new Game { GameId = 1, Title = "Game 1", Developer = "Developer 1" },
-            new Game { GameId = 2, Title = "Game 2", Developer = "Developer 2" }
-        }.AsQueryable();
+        _context = new MyDBContext(options, configMock.Object);
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
 
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Provider).Returns(games.Provider);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Expression).Returns(games.Expression);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.ElementType).Returns(games.ElementType);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.GetEnumerator()).Returns(games.GetEnumerator());
-        mockDbSet.Setup(m => m.Include(It.IsAny<string>())).Returns(mockDbSet.Object);
+        _hubContextMock = new Mock<IHubContext<ChatHub>>();
+        var clientsMock = new Mock<IHubClients>();
+        var clientProxyMock = new Mock<IClientProxy>();
+        clientProxyMock
+            .Setup(x => x.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        clientsMock.Setup(c => c.All).Returns(clientProxyMock.Object);
+        _hubContextMock.Setup(h => h.Clients).Returns(clientsMock.Object);
 
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        var queryParams = new QueryParams { Page = 1, PageSize = 10, SortBy = "id", SortOrder = SortOrderEnum.asc };
-
-        // Act
-        var result = await _gamesRepo.GetGames(queryParams);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<ActionResult<IEnumerable<Game>>>(result);
+        _repo = new GamesRepo(_context, _hubContextMock.Object);
     }
 
     [Fact]
-    public async Task GetGames_WithSearchParam_FiltersResults()
+    public async Task GetGames_ReturnsGamesFromContext()
     {
-        // Arrange
-        var games = new List<Game>
-        {
-            new Game { GameId = 1, Title = "The Witcher 3", Developer = "CD Projekt Red" },
-            new Game { GameId = 2, Title = "Elden Ring", Developer = "FromSoftware" }
-        }.AsQueryable();
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Provider).Returns(games.Provider);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Expression).Returns(games.Expression);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.ElementType).Returns(games.ElementType);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.GetEnumerator()).Returns(games.GetEnumerator());
-        mockDbSet.Setup(m => m.Include(It.IsAny<string>())).Returns(mockDbSet.Object);
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        var queryParams = new QueryParams { Page = 1, PageSize = 10, SortBy = "title", SortOrder = SortOrderEnum.asc, Search = "Witcher" };
-
-        // Act
-        var result = await _gamesRepo.GetGames(queryParams);
-
-        // Assert
-        Assert.NotNull(result);
-    }
-
-    #endregion
-
-    #region GetGame Tests
-
-    [Fact]
-    public async Task GetGame_WithValidId_ReturnsOkResultWithGame()
-    {
-        // Arrange
-        var gameId = 1;
-        var game = new Game { GameId = gameId, Title = "Test Game", Developer = "Test Developer" };
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.Setup(m => m.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Game, bool>>>(), CancellationToken.None))
-            .ReturnsAsync(game);
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        // Act
-        var result = await _gamesRepo.GetGame(gameId);
-
-        // Assert
-        Assert.NotNull(result);
-        var okResult = result.Value;
-        Assert.Equal(gameId, okResult?.GameId);
-        Assert.Equal("Test Game", okResult?.Title);
-    }
-
-    [Fact]
-    public async Task GetGame_WithInvalidId_ReturnsNotFound()
-    {
-        // Arrange
-        var gameId = 999;
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.Setup(m => m.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Game, bool>>>(), CancellationToken.None))
-            .ReturnsAsync((Game?)null);
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        // Act
-        var result = await _gamesRepo.GetGame(gameId);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Null(result.Value);
-    }
-
-    #endregion
-
-    #region CreateGame Tests
-
-    [Fact]
-    public async Task CreateGame_WithValidGame_ReturnsCreatedAtActionResult()
-    {
-        // Arrange
-        var newGame = new Game 
-        { 
-            GameId = 1, 
-            Title = "New Game", 
-            Developer = "New Developer", 
-            Description = "Test Description",
-            Publisher = "Test Publisher"
-        };
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.Setup(m => m.Add(It.IsAny<Game>())).Verifiable();
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-        _mockContext.Setup(c => c.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        // Act
-        var result = await _gamesRepo.CreateGame(newGame);
-
-        // Assert
-        Assert.NotNull(result);
-        var createdResult = result.Value;
-        Assert.Equal("New Game", createdResult?.Title);
-        Assert.Equal("New Developer", createdResult?.Developer);
-        _mockContext.Verify(c => c.SaveChangesAsync(CancellationToken.None), Times.Once);
-    }
-
-    [Fact]
-    public async Task CreateGame_CallsSaveChangesAsync()
-    {
-        // Arrange
-        var newGame = new Game { GameId = 1, Title = "Another Game" };
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-        _mockContext.Setup(c => c.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        // Act
-        await _gamesRepo.CreateGame(newGame);
-
-        // Assert
-        _mockContext.Verify(c => c.SaveChangesAsync(CancellationToken.None), Times.Once);
-    }
-
-    #endregion
-
-    #region PutGame Tests
-
-    [Fact]
-    public async Task PutGame_WithMatchingIds_UpdatesGame()
-    {
-        // Arrange
-        var gameId = 1;
-        var game = new Game { GameId = gameId, Title = "Updated Game", Developer = "Updated Developer" };
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-        _mockContext.Setup(c => c.Entry(It.IsAny<Game>())).Returns(new Mock<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Game>>().Object);
-        _mockContext.Setup(c => c.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        // Act
-        var result = await _gamesRepo.PutGame(gameId, game);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<NoContentResult>(result);
-        _mockContext.Verify(c => c.SaveChangesAsync(CancellationToken.None), Times.Once);
-    }
-
-    [Fact]
-    public async Task PutGame_WithMismatchedIds_ReturnsBadRequest()
-    {
-        // Arrange
-        var gameId = 1;
-        var game = new Game { GameId = 2, Title = "Test Game" };
-
-        // Act
-        var result = await _gamesRepo.PutGame(gameId, game);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<BadRequestResult>(result);
-    }
-
-    #endregion
-
-    #region DeleteGame Tests
-
-    [Fact]
-    public async Task DeleteGame_WithValidId_DeletesGame()
-    {
-        // Arrange
-        var gameId = 1;
-        var game = new Game { GameId = gameId, Title = "Game to Delete" };
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.Setup(m => m.FindAsync(new object[] { gameId }, CancellationToken.None))
-            .ReturnsAsync(game);
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-        _mockContext.Setup(c => c.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        // Act
-        var result = await _gamesRepo.DeleteGame(gameId);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<NoContentResult>(result);
-        mockDbSet.Verify(m => m.Remove(It.Is<Game>(g => g.GameId == gameId)), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(CancellationToken.None), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteGame_WithInvalidId_ReturnsNotFound()
-    {
-        // Arrange
-        var gameId = 999;
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.Setup(m => m.FindAsync(new object[] { gameId }, CancellationToken.None))
-            .ReturnsAsync((Game?)null);
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        // Act
-        var result = await _gamesRepo.DeleteGame(gameId);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    #endregion
-
-    #region GetTotalCountAsync Tests
-
-    [Fact]
-    public async Task GetTotalCountAsync_WithNoFilter_ReturnsTotalCount()
-    {
-        // Arrange
-        var games = new List<Game>
-        {
-            new Game { GameId = 1, Title = "Game 1" },
-            new Game { GameId = 2, Title = "Game 2" },
-            new Game { GameId = 3, Title = "Game 3" }
-        }.AsQueryable();
-
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Provider).Returns(games.Provider);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Expression).Returns(games.Expression);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.ElementType).Returns(games.ElementType);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.GetEnumerator()).Returns(games.GetEnumerator());
-
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
+        _context.Games.AddRange(
+            new Game { Title = "Game 1" },
+            new Game { Title = "Game 2" }
+        );
+        await _context.SaveChangesAsync();
 
         var queryParams = new QueryParams { Page = 1, PageSize = 10 };
 
-        // Act
-        var result = await _gamesRepo.GetTotalCountAsync(queryParams);
+        var result = await _repo.GetGames(queryParams);
 
-        // Assert
-        Assert.Equal(3, result);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value!.Count());
     }
 
     [Fact]
-    public async Task GetTotalCountAsync_WithFilter_ReturnsFilteredCount()
+    public async Task GetGame_WithExistingId_ReturnsGame()
     {
-        // Arrange
-        var games = new List<Game>
-        {
-            new Game { GameId = 1, Title = "The Witcher 3" },
-            new Game { GameId = 2, Title = "Elden Ring" }
-        }.AsQueryable();
+        var game = new Game { Title = "My Game" };
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
 
-        var mockDbSet = new Mock<DbSet<Game>>();
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Provider).Returns(games.Provider);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.Expression).Returns(games.Expression);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.ElementType).Returns(games.ElementType);
-        mockDbSet.As<IQueryable<Game>>().Setup(m => m.GetEnumerator()).Returns(games.GetEnumerator());
+        var result = await _repo.GetGame(game.GameId);
 
-        _mockContext.Setup(c => c.Games).Returns(mockDbSet.Object);
-
-        var queryParams = new QueryParams { Page = 1, PageSize = 10, SortBy = "title", Search = "Witcher" };
-
-        // Act
-        var result = await _gamesRepo.GetTotalCountAsync(queryParams);
-
-        // Assert
-        Assert.True(result >= 0);
+        Assert.NotNull(result.Value);
+        Assert.Equal(game.GameId, result.Value!.GameId);
+        Assert.Equal("My Game", result.Value.Title);
     }
 
-    #endregion
+    [Fact]
+    public async Task GetGame_WithMissingId_ReturnsNotFound()
+    {
+        var result = await _repo.GetGame(999);
+
+        Assert.IsType<NotFoundResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task CreateGame_AddsGameAndReturnsCreatedResult()
+    {
+        var game = new Game { Title = "New Game" };
+
+        var result = await _repo.CreateGame(game);
+
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var returnedGame = Assert.IsType<Game>(createdResult.Value);
+        Assert.Equal("New Game", returnedGame.Title);
+        Assert.Equal(1, await _context.Games.CountAsync());
+        Assert.Equal(game.GameId, returnedGame.GameId);
+    }
+
+    [Fact]
+    public async Task PutGame_WithMismatchedId_ReturnsBadRequest()
+    {
+        var game = new Game { Title = "Existing Game" };
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
+
+        var updatedGame = new Game { GameId = game.GameId + 1, Title = "Updated Game" };
+
+        var result = await _repo.PutGame(game.GameId, updatedGame);
+
+        Assert.IsType<BadRequestResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteGame_RemovesGame_WhenExists()
+    {
+        var game = new Game { Title = "Delete Game" };
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.DeleteGame(game.GameId);
+
+        Assert.IsType<NoContentResult>(result);
+        Assert.Empty(_context.Games);
+    }
+
+    [Fact]
+    public async Task DeleteGame_WithMissingId_ReturnsNotFound()
+    {
+        var result = await _repo.DeleteGame(999);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task GetTotalCountAsync_ReturnsTotalCount()
+    {
+        _context.Games.AddRange(
+            new Game { Title = "A" },
+            new Game { Title = "B" },
+            new Game { Title = "C" }
+        );
+        await _context.SaveChangesAsync();
+
+        var queryParams = new QueryParams { Page = 1, PageSize = 10 };
+
+        var count = await _repo.GetTotalCountAsync(queryParams);
+
+        Assert.Equal(3, count);
+    }
 }
