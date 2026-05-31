@@ -50,6 +50,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\SQLite\20260128145109_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260128145109_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260201140904_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260201140904_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260206094655_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260206094655_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260207165128_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260207165128_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260211161634_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260211161634_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260214135031_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260214135031_InitialCreateSQLite.Designer.cs" />
+    <Compile Remove="Migrations\SQLite\20260325160221_InitialCreateSQLite.cs" />
+    <Compile Remove="Migrations\SQLite\20260325160221_InitialCreateSQLite.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\lcpapi.library\lcpapi.library.csproj" />
   </ItemGroup>
 
