@@ -413,7 +413,7 @@ CREATE UNIQUE INDEX "IX_UserModerationSettings_UserId" ON "UserModerationSetting
 CREATE UNIQUE INDEX "IX_UserPermissionsSettings_UserId" ON "UserPermissionsSettings" ("UserId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20260523115338_InitialCreateSQLite', '10.0.8');
+VALUES ('20260606131512_InitialCreateSQLite', '10.0.8');
 
 COMMIT;
 

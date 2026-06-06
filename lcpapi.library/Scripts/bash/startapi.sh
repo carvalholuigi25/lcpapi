@@ -1,8 +1,8 @@
 #!/bin/bash
 #set -e
 
-#pthproj="$HOME/Documents/projects/lcpapi/lcpapi"
-pthproj=$(sudo find $HOME -type d -name "lcpapi" -prune 2>/dev/null)
+#pthproj="$HOME/mydocs/lcpapi/lcpapi"
+pthproj=$(find "$HOME" -type d -name "lcpapi" -prune 2>/dev/null | head -n 1)
 
 # cd "$pthproj" || exit
 # pocdnet=$(netstat -ano | findstr :5000 | findstr LISTENING | awk '{print $5}')

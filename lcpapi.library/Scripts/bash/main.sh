@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-pthproj="$HOME/Documents/projects/lcpapi/lcpapi.library"
-#pthproj=$(sudo find $HOME -type d -name "lcpapi" -prune 2>/dev/null)
+pthproj="$HOME/mydocs/lcpapi/lcpapi.library"
+#pthproj=$(sudo find $HOME -type d -name "lcpapi/lcpapi.library" -prune 2>/dev/null | head -n 1)
 
 cd "$pthproj" || exit
 
@@ -47,13 +47,16 @@ main() {
     echo "A - Start API"
     echo "B - Stop API"
     echo "C - Generate DB"
+    echo "E - Exit"
+    echo "--------------------------------------"
     echo
     read -p "" chmmode
 
     case "$chmmode" in
         ""|A|a) startAPI ;;
         B|b) stopAPI ;;
- 	C|c) genDB ;;
+ 	    C|c) genDB ;;
+        E|e) exit 0 ;;
         *) invChoice ;;
     esac
 }

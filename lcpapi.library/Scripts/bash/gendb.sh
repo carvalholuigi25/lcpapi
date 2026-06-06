@@ -1,8 +1,8 @@
 #!/bin/bash
 #set -e
 
-pthproj="$HOME/Documents/projects/lcpapi/lcpapi"
-#pthproj=$(sudo find $HOME -type d -name "lcpapi" -prune 2>/dev/null)
+pthproj="$HOME/mydocs/lcpapi/lcpapi"
+# pthproj=$(find "$HOME" -type d -name "lcpapi" -prune 2>/dev/null | head -n 1)
 pthmig="$pthproj/Migrations"
 DefDBMode="SQLite"
 
@@ -29,6 +29,8 @@ main() {
     echo "3 - PostgresSQL"
     echo "4 - MySQL"
     echo "5 - All"
+    echo "E - Exit"
+    echo "--------------------------------------"
     echo
     read -p "" chdbmode
 
@@ -38,6 +40,7 @@ main() {
         3) addPostgresSQL ;;
         4) addMySQL ;;
         5) addAll ;;
+        e|E) exit 0 ;;
         *) invChoice ;;
     esac
 }
