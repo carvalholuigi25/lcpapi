@@ -17,7 +17,7 @@ public class GamesControllerTests
     public async Task GetGames_ReturnsOkResult_WithQueryParamsResp()
     {
         var queryParams = new QueryParams();
-        var games = new List<Game>
+        var Games = new List<Game>
         {
             new Game { GameId = 1, Title = "Dragon Ball Sparking Zero" },
             new Game { GameId = 2, Title = "007 First Light" },
@@ -26,9 +26,9 @@ public class GamesControllerTests
 
         var mockRepo = new Mock<IGamesRepo>();
         mockRepo.Setup(r => r.GetGames(It.Is<QueryParams>(q => q.Page == queryParams.Page && q.PageSize == queryParams.PageSize)))
-                .ReturnsAsync(new ActionResult<IEnumerable<Game>>(games));
+                .ReturnsAsync(new ActionResult<IEnumerable<Game>>(Games));
         mockRepo.Setup(r => r.GetTotalCountAsync(It.IsAny<QueryParams>()))
-                .ReturnsAsync(games.Count);
+                .ReturnsAsync(Games.Count);
 
         var controller = new GamesController(mockRepo.Object, null!);
 
@@ -37,7 +37,7 @@ public class GamesControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         var response = Assert.IsType<QueryParamsResp<Game>>(okResult.Value);
 
-        Assert.Equal(games.Count, response.TotalCount);
+        Assert.Equal(Games.Count, response.TotalCount);
         Assert.Equal(queryParams.Page, response.Page);
         Assert.Equal(queryParams.PageSize, response.PageSize);
         Assert.NotNull(response.Data);
@@ -51,22 +51,20 @@ public class GamesControllerTests
     public async Task GetGame_ById_ReturnsOkResult_WithQueryParamsResp()
     {
         int id = 1;
-        var game = new Game { GameId = id, Title = "Dragon Ball Sparking Zero" };
+        var Game = new Game { GameId = id, Title = "Dragon Ball Sparking Zero" };
 
         var mockRepo = new Mock<IGamesRepo>();
         mockRepo.Setup(r => r.GetGame(id))
-                .ReturnsAsync(new ActionResult<Game>(game));
+                .ReturnsAsync(new ActionResult<Game>(Game));
 
         var controller = new GamesController(mockRepo.Object, null!);
 
         var result = await controller.GetGame(id);
 
-        var okResult = Assert.IsType<OkObjectResult>(result.Result ?? new OkObjectResult(null));
+        var response = Assert.IsType<Game>(result.Value);
 
-        var response = Assert.IsType<Game>(okResult.Value ?? new Game());
-
-        Assert.Equal(game.GameId, response.GameId);
-        Assert.Equal(game.Title, response.Title);
+        Assert.Equal(Game.GameId, response.GameId);
+        Assert.Equal(Game.Title, response.Title);
     }
 
     [Fact]
@@ -86,20 +84,58 @@ public class GamesControllerTests
     }
 
     [Fact]
+    public async Task CreateGame_ReturnsCreatedAtActionResult()
+    {
+        var newGame = new Game { Title = "Dragon Ball Sparking Zero" };
+        var createdGame = new Game { GameId = 1, Title = "Dragon Ball Sparking Zero" };
+
+        var mockRepo = new Mock<IGamesRepo>();
+        mockRepo.Setup(r => r.CreateGame(newGame))
+                .ReturnsAsync(new ActionResult<Game>(new CreatedAtActionResult(nameof(GamesController.GetGame), "Games", new { id = createdGame.GameId }, createdGame)));
+
+        var controller = new GamesController(mockRepo.Object, null!);
+
+        var result = await controller.CreateGame(newGame);
+
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var response = Assert.IsType<Game>(createdAtActionResult.Value);
+
+        Assert.Equal(createdGame.GameId, response.GameId);
+        Assert.Equal(createdGame.Title, response.Title);
+    }
+
+    [Fact]
     public async Task PutGame_ById_ReturnsOkResult()
     {
         int id = 1;
-        var game = new Game { GameId = id, Title = "Dragon Ball Sparking Zero" };
+        var Game = new Game { GameId = id, Title = "Teco" };
 
         var mockRepo = new Mock<IGamesRepo>();
-        mockRepo.Setup(r => r.PutGame(id, game))
+        mockRepo.Setup(r => r.PutGame(id, Game))
                 .ReturnsAsync(new OkResult());
 
         var controller = new GamesController(mockRepo.Object, null!);
 
-        var result = await controller.PutGame(id, game);
+        var result = await controller.PutGame(id, Game);
 
         Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task PutGame_ById_ReturnsNotFoundResult()
+    {
+        int id = 1;
+        var Game = new Game { GameId = id, Title = "Teco" };
+
+        var mockRepo = new Mock<IGamesRepo>();
+        mockRepo.Setup(r => r.PutGame(id, Game))
+                .ReturnsAsync(new NotFoundResult());
+
+        var controller = new GamesController(mockRepo.Object, null!);
+
+        var result = await controller.PutGame(id, Game);
+
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -116,5 +152,21 @@ public class GamesControllerTests
         var result = await controller.DeleteGame(id);
 
         Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteGame_ById_ReturnsNotFoundResult()
+    {
+        int id = 1;
+
+        var mockRepo = new Mock<IGamesRepo>();
+        mockRepo.Setup(r => r.DeleteGame(id))
+                .ReturnsAsync(new NotFoundResult());
+
+        var controller = new GamesController(mockRepo.Object, null!);
+
+        var result = await controller.DeleteGame(id);
+
+        Assert.IsType<NotFoundResult>(result);
     }
 }
