@@ -11,8 +11,15 @@ using Xunit;
 
 namespace lcpapi.unittests.Controllers;
 
+/// <summary>
+/// Unit tests for PetController.
+/// </summary>
 public class PetsControllerTests
 {
+    /// <summary>
+    /// Tests the GetPet method of PetController to ensure it returns an OkResult with a QueryParamsResp containing the expected data.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetPets_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -47,6 +54,10 @@ public class PetsControllerTests
         Assert.Equal("Manchas", response.Data[2].Name);
     }
 
+    /// <summary>
+    /// Tests the GetPet method of PetController to ensure it returns an OkResult with the expected Pet data when a valid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetPet_ById_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -67,6 +78,10 @@ public class PetsControllerTests
         Assert.Equal(Pet.Name, response.Name);
     }
 
+    /// <summary>
+    /// Tests the GetPet method of PetController to ensure it returns a NotFoundResult when an invalid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetPet_ById_ReturnsNotFoundResult()
     {
@@ -83,6 +98,10 @@ public class PetsControllerTests
         Assert.IsType<NotFoundResult>(result.Result);   
     }
 
+    /// <summary>
+    /// Tests the CreatePet method of PetController to ensure it returns a CreatedAtActionResult with the expected Pet data when a new pet is created successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task CreatePet_ReturnsCreatedAtActionResult()
     {
@@ -104,6 +123,10 @@ public class PetsControllerTests
         Assert.Equal(createdPet.Name, response.Name);
     }
 
+    /// <summary>
+    ///    Tests the PutPet method of PetController to ensure it returns an OkResult when an existing pet is updated successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutPet_ById_ReturnsOkResult()
     {
@@ -121,6 +144,10 @@ public class PetsControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    ///    Tests the PutPet method of PetController to ensure it returns a NotFoundResult when trying to update a non-existing pet.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutPet_ById_ReturnsNotFoundResult()
     {
@@ -138,6 +165,10 @@ public class PetsControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
 
+     /// <summary>
+     /// Tests the DeletePet method of PetController to ensure it returns an OkResult when an existing pet is deleted successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeletePet_ById_ReturnsOkResult()
     {
@@ -154,6 +185,10 @@ public class PetsControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    ///   Tests the DeletePet method of PetController to ensure it returns a NotFoundResult when trying to delete a non-existing pet.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeletePet_ById_ReturnsNotFoundResult()
     {

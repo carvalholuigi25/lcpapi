@@ -11,8 +11,15 @@ using Xunit;
 
 namespace lcpapi.unittests.Controllers;
 
+/// <summary>
+/// Unit tests for AnimesController.
+/// </summary>
 public class AnimesControllerTests
 {
+    /// <summary>
+    ///     Tests the GetAnimes method of AnimesController to ensure it returns an OkResult with a QueryParamsResp containing the expected data.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetAnimes_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -47,6 +54,10 @@ public class AnimesControllerTests
         Assert.Equal("Naruto Shippuden", response.Data[2].Title);
     }
 
+    /// <summary>
+    ///     Tests the GetAnime method of AnimesController to ensure it returns an OkResult with the expected Anime data when a valid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetAnime_ById_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -67,6 +78,10 @@ public class AnimesControllerTests
         Assert.Equal(Anime.Title, response.Title);
     }
 
+    /// <summary>
+    ///     Tests the GetAnime method of AnimesController to ensure it returns a NotFoundResult when an invalid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetAnime_ById_ReturnsNotFoundResult()
     {
@@ -83,6 +98,10 @@ public class AnimesControllerTests
         Assert.IsType<NotFoundResult>(result.Result);   
     }
 
+    /// <summary>
+    ///     Tests the CreateAnime method of AnimesController to ensure it returns a CreatedAtActionResult with the expected Anime data when a new anime is created successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task CreateAnime_ReturnsCreatedAtActionResult()
     {
@@ -104,6 +123,10 @@ public class AnimesControllerTests
         Assert.Equal(createdAnime.Title, response.Title);
     }
 
+    /// <summary>
+    ///     Tests the PutAnime method of AnimesController to ensure it returns an OkResult when an existing anime is updated successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutAnime_ById_ReturnsOkResult()
     {
@@ -121,6 +144,10 @@ public class AnimesControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    ///     Tests the PutAnime method of AnimesController to ensure it returns a NotFoundResult when trying to update a non-existing anime.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutAnime_ById_ReturnsNotFoundResult()
     {
@@ -138,6 +165,10 @@ public class AnimesControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
 
+    /// <summary>
+    ///     Tests the DeleteAnime method of AnimesController to ensure it returns an OkResult when an existing anime is deleted successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteAnime_ById_ReturnsOkResult()
     {
@@ -154,6 +185,10 @@ public class AnimesControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    ///     Tests the DeleteAnime method of AnimesController to ensure it returns a NotFoundResult when trying to delete a non-existing anime.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteAnime_ById_ReturnsNotFoundResult()
     {

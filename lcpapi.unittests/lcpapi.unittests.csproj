@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);1591;CS1591;NU1608</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -25,14 +26,14 @@
     <Using Include="Moq" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../lcpapi/lcpapi.csproj" />
+  </ItemGroup>
+
   <!-- <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
     <ItemGroup>
     <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
     </ItemGroup>
   </Target> -->
-
-  <ItemGroup>
-    <ProjectReference Include="../lcpapi/lcpapi.csproj" />
-  </ItemGroup>
 
 </Project>

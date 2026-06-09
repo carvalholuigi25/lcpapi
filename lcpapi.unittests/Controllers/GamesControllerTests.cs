@@ -11,8 +11,15 @@ using Xunit;
 
 namespace lcpapi.unittests.Controllers;
 
+/// <summary>
+/// Unit tests for GamesController.
+/// </summary>
 public class GamesControllerTests
 {
+    /// <summary>
+    /// Tests the GetGame method of GamesController to ensure it returns an OkResult with a QueryParamsResp containing the expected data.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetGames_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -47,6 +54,10 @@ public class GamesControllerTests
         Assert.Equal("Grand Theft Auto V", response.Data[2].Title);
     }
 
+    /// <summary>
+    /// Tests the GetGame method of GamesController to ensure it returns an OkResult with the expected Game data when a valid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetGame_ById_ReturnsOkResult_WithQueryParamsResp()
     {
@@ -67,6 +78,10 @@ public class GamesControllerTests
         Assert.Equal(Game.Title, response.Title);
     }
 
+    /// <summary>
+    /// Tests the GetGame method of GamesController to ensure it returns a NotFoundResult when an invalid ID is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetGame_ById_ReturnsNotFoundResult()
     {
@@ -83,6 +98,11 @@ public class GamesControllerTests
         Assert.IsType<NotFoundResult>(result.Result);   
     }
 
+    /// <summary>
+    /// Tests the CreateGame method of GamesController to ensure it returns a CreatedAtActionResult
+    ///     with the expected Game data when a new game is created successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task CreateGame_ReturnsCreatedAtActionResult()
     {
@@ -104,6 +124,10 @@ public class GamesControllerTests
         Assert.Equal(createdGame.Title, response.Title);
     }
 
+    /// <summary>
+    /// Tests the PutGame method of GamesController to ensure it returns an OkResult when an existing game is updated successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutGame_ById_ReturnsOkResult()
     {
@@ -121,6 +145,11 @@ public class GamesControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    /// Tests the PutGame method of GamesController to ensure it returns a NotFoundResult when
+    ///   trying to update a non-existing game.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task PutGame_ById_ReturnsNotFoundResult()
     {
@@ -138,6 +167,10 @@ public class GamesControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
 
+    /// <summary>
+    /// Tests the DeleteGame method of GamesController to ensure it returns an OkResult when an existing game is deleted successfully.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteGame_ById_ReturnsOkResult()
     {
@@ -154,6 +187,10 @@ public class GamesControllerTests
         Assert.IsType<OkResult>(result);
     }
 
+    /// <summary>
+    /// Tests the DeleteGame method of GamesController to ensure it returns a NotFoundResult when trying to delete a non-existing game.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteGame_ById_ReturnsNotFoundResult()
     {
