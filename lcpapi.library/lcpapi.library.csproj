@@ -45,6 +45,12 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
 	</ItemGroup>
 
+  <!-- <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
+    <ItemGroup>
+    <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
+    </ItemGroup>
+  </Target> -->
+
   <ItemGroup>
     <None Remove="languageslist.json" />
     <None Remove="Resources\de-DE.json" />

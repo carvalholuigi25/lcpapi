@@ -108,7 +108,7 @@ public class AnimesControllerTests
     public async Task PutAnime_ById_ReturnsOkResult()
     {
         int id = 1;
-        var Anime = new Anime { AnimeId = id, Title = "Teco" };
+        var Anime = new Anime { AnimeId = id, Title = "Dragon Ball Z" };
 
         var mockRepo = new Mock<IAnimesRepo>();
         mockRepo.Setup(r => r.PutAnime(id, Anime))
@@ -125,7 +125,7 @@ public class AnimesControllerTests
     public async Task PutAnime_ById_ReturnsNotFoundResult()
     {
         int id = 1;
-        var Anime = new Anime { AnimeId = id, Title = "Teco" };
+        var Anime = new Anime { AnimeId = id, Title = "Dragon Ball Z" };
 
         var mockRepo = new Mock<IAnimesRepo>();
         mockRepo.Setup(r => r.PutAnime(id, Anime))

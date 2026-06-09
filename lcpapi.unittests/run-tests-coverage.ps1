@@ -11,7 +11,20 @@ Write-Host "Settings: $settingsPath"
 Write-Host "Results: $resultsDir"
 Write-Host "Coverage report: $coverageReportDir"
 
+if (Test-Path $resultsDir) {
+    Write-Host "Removing existing test results at: $resultsDir"
+    Remove-Item -Path $resultsDir -Recurse -Force
+}
+
+if (Test-Path $coverageReportDir) {
+    Write-Host "Removing existing coverage report at: $coverageReportDir"
+    Remove-Item -Path $coverageReportDir -Recurse -Force
+}
+
+New-Item -Path $coverageReportDir -ItemType Directory -Force | Out-Null
+
 $testResult = dotnet test $projectPath --settings $settingsPath --results-directory $resultsDir
+
 if ($LASTEXITCODE -ne 0) {
     Write-Error "dotnet test failed with exit code $LASTEXITCODE"
     exit $LASTEXITCODE

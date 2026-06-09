@@ -108,7 +108,7 @@ public class GamesControllerTests
     public async Task PutGame_ById_ReturnsOkResult()
     {
         int id = 1;
-        var Game = new Game { GameId = id, Title = "Teco" };
+        var Game = new Game { GameId = id, Title = "Dragon Ball Z Budokai Tenkaichi 3" };
 
         var mockRepo = new Mock<IGamesRepo>();
         mockRepo.Setup(r => r.PutGame(id, Game))
@@ -125,7 +125,7 @@ public class GamesControllerTests
     public async Task PutGame_ById_ReturnsNotFoundResult()
     {
         int id = 1;
-        var Game = new Game { GameId = id, Title = "Teco" };
+        var Game = new Game { GameId = id, Title = "Dragon Ball Z Budokai Tenkaichi 3" };
 
         var mockRepo = new Mock<IGamesRepo>();
         mockRepo.Setup(r => r.PutGame(id, Game))

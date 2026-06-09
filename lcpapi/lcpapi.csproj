@@ -66,6 +66,12 @@
     <Compile Remove="Migrations\SQLite\20260325160221_InitialCreateSQLite.Designer.cs" />
   </ItemGroup>
 
+  <!-- <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
+    <ItemGroup>
+    <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
+    </ItemGroup>
+  </Target> -->
+
   <ItemGroup>
     <ProjectReference Include="..\lcpapi.library\lcpapi.library.csproj" />
   </ItemGroup>
