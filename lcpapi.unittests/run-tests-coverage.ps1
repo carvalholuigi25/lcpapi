@@ -5,6 +5,10 @@ $settingsPath = Join-Path $PSScriptRoot "coverage.runsettings"
 $resultsDir = Join-Path $PSScriptRoot "TestResults"
 $coverageReportDir = Join-Path $resultsDir "CoverageReport"
 
+Write-Host "Building the project before running tests..."
+dotnet clean $projectPath
+dotnet build $projectPath
+
 Write-Host "Running tests with coverage for lcpapi.unittests..."
 Write-Host "Project: $projectPath"
 Write-Host "Settings: $settingsPath"
@@ -24,6 +28,7 @@ if (Test-Path $coverageReportDir) {
 New-Item -Path $coverageReportDir -ItemType Directory -Force | Out-Null
 
 $testResult = dotnet test $projectPath --settings $settingsPath --results-directory $resultsDir
+write-host $testResult
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "dotnet test failed with exit code $LASTEXITCODE"
@@ -43,7 +48,7 @@ if (-not $coverageFile) {
 }
 
 Write-Host "Generating coverage reports from: $($coverageFile.FullName)"
-reportgenerator -reports:"$($coverageFile.FullName)" -targetdir:"$coverageReportDir" -reporttypes:"Html;JsonSummary"
+reportgenerator -reports:"$($coverageFile.FullName)" -targetdir:"$coverageReportDir" -reporttypes:"Html;JsonSummary" -assemblyfilters:-Microsoft.AspNetCore.OpenApi.*
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Report generation failed with exit code $LASTEXITCODE"

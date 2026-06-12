@@ -1,6 +1,11 @@
 param()
 
 $projectPath = Join-Path $PSScriptRoot "lcpapi.unittests.csproj"
+
+Write-Host "Building the project before running tests..."
+dotnet clean $projectPath
+dotnet build $projectPath
+
 Write-Host "Running tests for lcpapi.unittests..."
 Write-Host "Project: $projectPath"
 $testResult = dotnet test $projectPath
