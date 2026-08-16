@@ -1,0 +1,34 @@
+name: 'LCPAPI - Production'
+values:
+  - key: baseUrl
+    value: 'https://your-production-domain.com'
+    type: default
+    enabled: true
+  - key: baseUrlHttps
+    value: 'https://your-production-domain.com'
+    type: default
+    enabled: true
+  - key: token
+    value: ''
+    type: secret
+    enabled: true
+  - key: refreshToken
+    value: ''
+    type: secret
+    enabled: true
+  - key: id
+    value: '1'
+    type: default
+    enabled: true
+  - key: username
+    value: ''
+    type: default
+    enabled: true
+  - key: password
+    value: ''
+    type: secret
+    enabled: true
+  - key: otpCode
+    value: ''
+    type: default
+    enabled: true

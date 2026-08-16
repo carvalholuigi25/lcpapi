@@ -1,0 +1,45 @@
+$kind: http-request
+name: Create Pet
+method: POST
+url: '{{baseUrl}}/api/pets'
+order: 3000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "string",
+      "description": "string",
+      "image": "string",
+      "species": "string",
+      "breed": "string",
+      "isFeatured": false,
+      "age": 0
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 201", () => {
+            pm.response.to.have.status(201);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Created resource has an ID", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("petId");
+            pm.expect(json.petId).to.be.a("number").and.above(0);
+        });
+
+        pm.test("Created resource has required fields", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("name");
+        });

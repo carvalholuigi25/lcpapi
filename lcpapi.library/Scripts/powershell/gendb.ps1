@@ -71,6 +71,8 @@ function AddDB {
         New-Item -ItemType Directory -Path "$pthproj\Database\$dbMode"
     }
 
+    dotnet clean
+    dotnet build
     dotnet ef migrations remove --force --context "MyDBContext$dbMode"
     dotnet ef database drop --force --context "MyDBContext$dbMode"
     dotnet ef migrations add "InitialCreate$dbMode" --context "MyDBContext$dbMode" --output-dir "$pthmig\$dbMode"

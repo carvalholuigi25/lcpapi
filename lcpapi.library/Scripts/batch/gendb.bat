@@ -32,6 +32,8 @@ if not exist "%pthproj%\Database\%~1" (
     mkdir "%pthproj%\Database\%~1"
 )
 
+dotnet clean
+dotnet build
 dotnet ef migrations remove --force --context "MyDBContext%~1"
 dotnet ef database drop --force --context "MyDBContext%~1"
 dotnet ef migrations add "InitialCreate%~1" --context "MyDBContext%~1" --output-dir "%pthmig%/%~1"

@@ -1,0 +1,42 @@
+$kind: http-request
+name: Upload File
+method: POST
+url: '{{baseUrl}}/api/uploadedfiles'
+order: 3000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "fileName": "string",
+      "filePath": "string",
+      "fileSize": 0,
+      "fileType": "string"
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 201", () => {
+            pm.response.to.have.status(201);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Created resource has an ID", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("iD");
+            pm.expect(json.iD).to.be.a("number").and.above(0);
+        });
+
+        pm.test("Created resource has required fields", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("fileName");
+        });

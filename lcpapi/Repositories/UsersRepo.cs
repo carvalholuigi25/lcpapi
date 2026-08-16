@@ -4,16 +4,20 @@ using lcpapi.Context;
 using lcpapi.Models;
 using lcpapi.Interfaces;
 using lcpapi.Models.QParams;
+using Microsoft.AspNetCore.SignalR;
+using lcpapi.Hubs;
 
 namespace lcpapi.Repositories;
 
 public class UsersRepo : ControllerBase, IUsersRepo
 {
     private readonly MyDBContext _context;
+    private readonly IHubContext<ChatHub> _hubContext;
 
-    public UsersRepo(MyDBContext context)
+    public UsersRepo(MyDBContext context, IHubContext<ChatHub> hubContext)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
     public async Task<ActionResult<IEnumerable<User>>> GetUsers(QueryParams queryParams)
@@ -29,7 +33,9 @@ public class UsersRepo : ControllerBase, IUsersRepo
         // Pagination
         query = GetPaginationData(query, queryParams);
 
-        return await query.ToListAsync();
+        var res = await query.ToListAsync();
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", res);
+        return res;
     }
 
     public async Task<ActionResult<User>> GetUser(int? id)
@@ -55,6 +61,7 @@ public class UsersRepo : ControllerBase, IUsersRepo
         }
 
         _context.Users.Add(user);
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", user);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
@@ -78,7 +85,8 @@ public class UsersRepo : ControllerBase, IUsersRepo
         _context.Entry(user).State = EntityState.Modified;
 
         try
-        {
+        {        
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", user);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
@@ -105,6 +113,7 @@ public class UsersRepo : ControllerBase, IUsersRepo
         }
 
         _context.Users.Remove(user);
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", user);
         await _context.SaveChangesAsync();
 
         return NoContent();

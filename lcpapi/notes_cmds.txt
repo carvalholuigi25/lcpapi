@@ -1,0 +1,6 @@
+// for update dependencies
+// dotnet tool install --global dotnet-outdated-tool
+// dotnet outdated --upgrade
+
+// update dotnet-ef
+// dotnet tool update --global dotnet-ef

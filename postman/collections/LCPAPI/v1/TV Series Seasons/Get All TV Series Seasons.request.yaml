@@ -1,0 +1,40 @@
+$kind: http-request
+name: Get All TV Series Seasons
+method: GET
+url: '{{baseUrl}}/api/tvseries/seasons'
+order: 1000
+auth:
+  type: noauth
+queryParams:
+  - key: page
+    value: '1'
+  - key: pageSize
+    value: '10'
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 200", () => {
+            pm.response.to.have.status(200);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Response has pagination structure", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("totalCount");
+            pm.expect(json).to.have.property("page");
+            pm.expect(json).to.have.property("pageSize");
+            pm.expect(json).to.have.property("data");
+            pm.expect(json.data).to.be.an("array");
+        });
+
+        pm.test("Pagination values are valid", () => {
+            const json = pm.response.json();
+            pm.expect(json.totalCount).to.be.a("number").and.at.least(0);
+            pm.expect(json.page).to.be.a("number").and.at.least(1);
+            pm.expect(json.pageSize).to.be.a("number").and.at.least(1);
+        });

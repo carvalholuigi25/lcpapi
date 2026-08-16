@@ -1,0 +1,20 @@
+$kind: collection
+name: LCPAPI
+variables:
+  - key: baseUrl
+    value: '{{baseUrl}}'
+    type: default
+    enabled: true
+  - key: token
+    value: '{{token}}'
+    type: secret
+    enabled: true
+  - key: id
+    value: '{{id}}'
+    type: default
+    enabled: true
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{token}}'

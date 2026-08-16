@@ -1,0 +1,56 @@
+$kind: http-request
+name: Authenticate
+method: POST
+url: '{{baseUrl}}/auth/authenticate'
+order: 1000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "string",
+      "password": "string"
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        if (pm.response.code === 200) {
+            const json = pm.response.json();
+
+            if (json.jwtToken) {
+                pm.environment.set("token", json.jwtToken);
+                console.log("✅ Token saved to environment variable 'token'");
+            } else {
+                console.warn("⚠️ Login succeeded but no jwtToken found in response");
+            }
+
+            if (json.id) {
+                pm.environment.set("id", json.id.toString());
+                console.log("✅ User ID saved to environment variable 'id':", json.id);
+            }
+        } else {
+            console.error("❌ Authentication failed:", pm.response.code, pm.response.text());
+        }
+
+        pm.test("Status code is 200", () => {
+            pm.response.to.have.status(200);
+        });
+
+        pm.test("Response contains jwtToken", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("jwtToken");
+            pm.expect(json.jwtToken).to.be.a("string").and.not.empty;
+        });
+
+        pm.test("Response contains user info", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("id");
+            pm.expect(json).to.have.property("username");
+            pm.expect(json).to.have.property("role");
+        });

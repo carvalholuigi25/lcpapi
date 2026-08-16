@@ -21,18 +21,21 @@ public class UserService : IUserService
 {
     private MyDBContext _context;
     private IJwtUtils _jwtUtils;
+    private IOtpService _otpService;
     private readonly AppSettings _appSettings;
     private readonly ILogger<UserService> _logger;
 
     public UserService(
         MyDBContext context,
         IJwtUtils jwtUtils,
+        IOtpService otpService,
         IOptions<AppSettings> appSettings,
         ILogger<UserService> logger
     )
     {
         _context = context;
         _jwtUtils = jwtUtils;
+        _otpService = otpService;
         _appSettings = appSettings.Value;
         _logger = logger;
     }
@@ -44,6 +47,13 @@ public class UserService : IUserService
         // validate
         if (user == null || !BCrypt.Verify(model.Password, user.Password))
             throw new AppException("Username or password is incorrect");
+
+        // If user enabled OTP, validate provided OTP code
+        if (user.OtpEnabled)
+        {
+            if (string.IsNullOrEmpty(model.OtpCode) || string.IsNullOrEmpty(user.OtpSecret) || !_otpService.ValidateTotp(user.OtpSecret, model.OtpCode))
+                throw new AppException("OTP code is required or invalid");
+        }
 
         // authentication successful so generate jwt and refresh tokens
         var jwtToken = _jwtUtils.GenerateJwtToken(user);

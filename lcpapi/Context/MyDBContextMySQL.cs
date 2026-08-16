@@ -14,7 +14,7 @@ public class MyDBContextMySQL : MyDBContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if(!optionsBuilder.IsConfigured) {
-            optionsBuilder.UseMySql(_config.GetConnectionString("MySQL")!, new MySqlServerVersion(new Version()));
+            optionsBuilder.UseMySql(_config.GetConnectionString("MySQL")!, new MySqlServerVersion(new Version())).EnableSensitiveDataLogging();
         }
 
         base.OnConfiguring(optionsBuilder);

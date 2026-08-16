@@ -4,21 +4,26 @@ using lcpapi.Context;
 using lcpapi.Models;
 using lcpapi.Interfaces;
 using lcpapi.Models.QParams;
+using lcpapi.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace lcpapi.Repositories;
 
 public class PostsRepo : ControllerBase, IPostsRepo
 {
+    
     private readonly MyDBContext _context;
+    private readonly IHubContext<ChatHub> _hubContext;
 
-    public PostsRepo(MyDBContext context)
+    public PostsRepo(MyDBContext context, IHubContext<ChatHub> hubContext)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
     public async Task<ActionResult<IEnumerable<Post>>> GetPosts(QueryParams queryParams)
     {
-        var query =  _context.Posts.AsQueryable();
+        var query = _context.Posts.AsQueryable();
 
         // Filtering
         query = GetFilterData(query, queryParams);
@@ -29,7 +34,9 @@ public class PostsRepo : ControllerBase, IPostsRepo
         // Pagination
         query = GetPaginationData(query, queryParams);
 
-        return await query.ToListAsync();
+        var res = await query.ToListAsync();
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", res);
+        return res;
     }
 
     public async Task<ActionResult<Post>> GetPost(int? id)
@@ -41,57 +48,60 @@ public class PostsRepo : ControllerBase, IPostsRepo
             return NotFound();
         }
 
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", post);
         return post;
     }
 
     public async Task<ActionResult<Post>> CreatePost(Post post)
     {
         _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", post);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
     }
 
     public async Task<IActionResult> PutPost(int? id, Post post)
     {
         if (id != post.Id)
-            {
-                return BadRequest();
-            }
+        {
+            return BadRequest();
+        }
 
-            _context.Entry(post).State = EntityState.Modified;
+        _context.Entry(post).State = EntityState.Modified;
 
-            try
+        try
+        {
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", post);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PostExists(id))
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!PostExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
+        }
 
-            return NoContent();
+        return NoContent();
     }
 
     public async Task<IActionResult> DeletePost(int? id)
     {
         var post = await _context.Posts.FindAsync(id);
-            if (post == null)
-            {
-                return NotFound();
-            }
+        if (post == null)
+        {
+            return NotFound();
+        }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+        _context.Posts.Remove(post);
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", post);
+        await _context.SaveChangesAsync();
 
-            return NoContent();
+        return NoContent();
     }
 
     public async Task<int> GetTotalCountAsync(QueryParams queryParams)

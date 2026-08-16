@@ -1,0 +1,45 @@
+$kind: http-request
+name: Create Setting
+method: POST
+url: '{{baseUrl}}/api/settings'
+order: 3000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "settingsId": 0,
+      "themeSettingName": "string",
+      "realDataTimeEnabled": false,
+      "isDarkMode": false,
+      "autoRefreshInterval": 0,
+      "notificationsEnabled": false,
+      "enableLogging": false
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 201", () => {
+            pm.response.to.have.status(201);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Created resource has an ID", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("settingsId");
+            pm.expect(json.settingsId).to.be.a("number").and.above(0);
+        });
+
+        pm.test("Created resource has required fields", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("themeSettingName");
+        });

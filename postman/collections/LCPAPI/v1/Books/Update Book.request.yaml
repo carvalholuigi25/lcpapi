@@ -1,0 +1,35 @@
+$kind: http-request
+name: Update Book
+method: PUT
+url: '{{baseUrl}}/api/books/{{id}}'
+order: 4000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "bookId": 0,
+      "title": "string",
+      "description": "string",
+      "author": "string",
+      "isFeatured": false,
+      "scoreRating": 0,
+      "releaseDate": "2024-01-01T00:00:00",
+      "genre": []
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 204", () => {
+            pm.response.to.have.status(204);
+        });
+
+        pm.test("Response body is empty", () => {
+            pm.expect(pm.response.text()).to.be.empty;
+        });

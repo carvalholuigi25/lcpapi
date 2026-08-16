@@ -1,0 +1,47 @@
+$kind: http-request
+name: Create Book
+method: POST
+url: '{{baseUrl}}/api/books'
+order: 3000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "string",
+      "description": "string",
+      "image": "string",
+      "artwork": "string",
+      "author": "string",
+      "isFeatured": false,
+      "scoreRating": 0,
+      "releaseDate": "2024-01-01T00:00:00",
+      "genre": []
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 201", () => {
+            pm.response.to.have.status(201);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Created resource has an ID", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("bookId");
+            pm.expect(json.bookId).to.be.a("number").and.above(0);
+        });
+
+        pm.test("Created resource has required fields", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("title");
+        });

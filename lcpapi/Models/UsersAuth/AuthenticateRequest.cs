@@ -8,4 +8,7 @@ public class AuthenticateRequest
 
     [Required]
     public string Password { get; set; } = null!;
+
+    // Optional OTP code when user has 2FA enabled
+    public string? OtpCode { get; set; }
 }

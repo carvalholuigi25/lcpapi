@@ -1,0 +1,17 @@
+$kind: http-request
+name: Delete User
+method: DELETE
+url: '{{baseUrl}}/api/users/{{id}}'
+order: 5000
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 204", () => {
+            pm.response.to.have.status(204);
+        });
+
+        pm.test("Response body is empty", () => {
+            pm.expect(pm.response.text()).to.be.empty;
+        });
