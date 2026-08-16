@@ -1,0 +1,35 @@
+$kind: http-request
+name: Update Pet
+method: PUT
+url: '{{baseUrl}}/api/pets/{{id}}'
+order: 4000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "petId": 0,
+      "name": "string",
+      "description": "string",
+      "image": "string",
+      "species": "string",
+      "breed": "string",
+      "isFeatured": false,
+      "age": 0
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 204", () => {
+            pm.response.to.have.status(204);
+        });
+
+        pm.test("Response body is empty", () => {
+            pm.expect(pm.response.text()).to.be.empty;
+        });

@@ -1,0 +1,5 @@
+$kind: http-request
+name: OTP Setup
+method: POST
+url: '{{baseUrl}}/auth/otp/setup'
+order: 1000

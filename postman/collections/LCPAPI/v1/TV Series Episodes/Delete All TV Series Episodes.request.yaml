@@ -1,0 +1,19 @@
+$kind: http-request
+name: Delete All TV Series Episodes
+method: DELETE
+url: '{{baseUrl}}/api/tvseries/episodes/all'
+order: 6000
+auth:
+  type: noauth
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 204", () => {
+            pm.response.to.have.status(204);
+        });
+
+        pm.test("Response body is empty", () => {
+            pm.expect(pm.response.text()).to.be.empty;
+        });

@@ -1,0 +1,44 @@
+$kind: http-request
+name: Create Recipe Food
+method: POST
+url: '{{baseUrl}}/api/recipesfoods'
+order: 3000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "string",
+      "description": "string",
+      "image": "string",
+      "ingredients": "string",
+      "instructions": "string",
+      "isFeatured": false
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 201", () => {
+            pm.response.to.have.status(201);
+        });
+
+        pm.test("Response is JSON", () => {
+            pm.response.to.be.json;
+        });
+
+        pm.test("Created resource has an ID", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("recipesFoodsId");
+            pm.expect(json.recipesFoodsId).to.be.a("number").and.above(0);
+        });
+
+        pm.test("Created resource has required fields", () => {
+            const json = pm.response.json();
+            pm.expect(json).to.have.property("title");
+        });

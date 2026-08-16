@@ -1,0 +1,30 @@
+$kind: http-request
+name: Update User
+method: PUT
+url: '{{baseUrl}}/api/users/{{id}}'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "id": 0,
+      "username": "string",
+      "password": "string",
+      "displayName": "string",
+      "role": "guest"
+    }
+events:
+  - listen: test
+    script:
+      type: text/javascript
+      exec: |-
+        pm.test("Status code is 204", () => {
+            pm.response.to.have.status(204);
+        });
+
+        pm.test("Response body is empty", () => {
+            pm.expect(pm.response.text()).to.be.empty;
+        });

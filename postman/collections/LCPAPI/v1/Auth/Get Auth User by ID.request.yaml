@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get Auth User by ID
+method: GET
+url: '{{baseUrl}}/auth/{{id}}'
+order: 5000

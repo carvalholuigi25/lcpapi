@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get OTP Setup PNG
+method: GET
+url: '{{baseUrl}}/auth/otp/setup/png'
+order: 2000
